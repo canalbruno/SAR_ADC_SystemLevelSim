@@ -5,9 +5,9 @@
 % System level switching energy of proposed SAR ADC window switching
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-clear all
-close all
-clc
+% clear all
+% close all
+% clc
 
 Cun=1; % 1 for enrgy in CV^2, choose a value for real energy calculation
 Vdd=1; % 1 for enrgy in CV^2, choose a value for real energy calculation
@@ -118,13 +118,6 @@ for i=1:length(VindArray)
        
        Vp=VDAC_P(1)+((sum(CDAC_P.*(Vbpf_DACP-Vbp0_DACP))+sum(CDAC_P1.*(Vbpf_DACP1-Vbp0_DACP1))+sum(CDAC_P2.*(Vbpf_DACP2-Vbp0_DACP2)))/Ctot_P);
        Vn=VDAC_N(1)+((sum(CDAC_N.*(Vbpf_DACN-Vbp0_DACN))+sum(CDAC_N1.*(Vbpf_DACN1-Vbp0_DACN1))+sum(CDAC_N2.*(Vbpf_DACN2-Vbp0_DACN2)))/Ctot_N);
-       
-       DvP(1:3)=((Vp-Vbpf_DACP(1:3))-(VDAC_P(1)-Vbp0_DACP(1:3)));
-       DvN(1:3)=((Vn-Vbpf_DACN(1:3))-(VDAC_N(1)-Vbp0_DACN(1:3)));
-       
-       Ep(1:3)=(-Vbpf_DACP(1:3).*CDAC_P(1:3)).*DvP(1:3);
-       En(1:3)=(-Vbpf_DACN(1:3).*CDAC_N(1:3)).*DvN(1:3);
-   
             
     elseif (InputValue>(3*Vref/8)) || (InputValue<(-3*Vref/8))
         TDC=1;
@@ -156,13 +149,7 @@ for i=1:length(VindArray)
         
         Vp=VDAC_P(1)+((sum(CDAC_P.*(Vbpf_DACP-Vbp0_DACP))+sum(CDAC_P1.*(Vbpf_DACP1-Vbp0_DACP1))+sum(CDAC_P2.*(Vbpf_DACP2-Vbp0_DACP2)))/Ctot_P);
         Vn=VDAC_N(1)+((sum(CDAC_N.*(Vbpf_DACN-Vbp0_DACN))+sum(CDAC_N1.*(Vbpf_DACN1-Vbp0_DACN1))+sum(CDAC_N2.*(Vbpf_DACN2-Vbp0_DACN2)))/Ctot_N);
-        
-        DvP(2:3)=((Vp-Vbpf_DACP(2:3))-(VDAC_P(1)-Vbp0_DACP(2:3)));
-        DvN(2:3)=((Vn-Vbpf_DACN(2:3))-(VDAC_N(1)-Vbp0_DACN(2:3))); % Voltage variation of switched capacitor
-                
-        Ep(2:3)=(-Vbpf_DACP(2:3).*CDAC_P(2:3)).*DvP(2:3);
-        En(2:3)=(-Vbpf_DACN(2:3).*CDAC_N(2:3)).*DvN(2:3);
-        
+
     else    
         TDC=2;
         if Vd<0
@@ -195,14 +182,18 @@ for i=1:length(VindArray)
         Vp=VDAC_P(1)+((sum(CDAC_P.*(Vbpf_DACP-Vbp0_DACP))+sum(CDAC_P1.*(Vbpf_DACP1-Vbp0_DACP1))+sum(CDAC_P2.*(Vbpf_DACP2-Vbp0_DACP2)))/Ctot_P);
         Vn=VDAC_N(1)+((sum(CDAC_N.*(Vbpf_DACN-Vbp0_DACN))+sum(CDAC_N1.*(Vbpf_DACN1-Vbp0_DACN1))+sum(CDAC_N2.*(Vbpf_DACN2-Vbp0_DACN2)))/Ctot_N);
         
-        DvP(3)=((Vp-Vbpf_DACP(3))-(VDAC_P(1)-Vbp0_DACP(3)));
-        DvN(3)=((Vn-Vbpf_DACN(3))-(VDAC_N(1)-Vbp0_DACN(3)));
-        
-        Ep(3)=-Vbpf_DACP(3)*CDAC_P(3)*DvP(3);
-        En(3)=-Vbpf_DACN(3)*CDAC_N(3)*DvN(3);
-        
     end
     
+    DvP=(Vp-Vbpf_DACP)-(VDAC_P(1)-Vbp0_DACP);
+    DvN=(Vn-Vbpf_DACN)-(VDAC_N(1)-Vbp0_DACN);
+    DvP1=(Vp-Vbpf_DACP1)-(VDAC_P(1)-Vbp0_DACP1);
+    DvN1=(Vn-Vbpf_DACN1)-(VDAC_N(1)-Vbp0_DACN1);
+    DvP2=(Vp-Vbpf_DACP2)-(VDAC_P(1)-Vbp0_DACP2);
+    DvN2=(Vn-Vbpf_DACN2)-(VDAC_N(1)-Vbp0_DACN2);
+    
+    Ep=[-(Vbpf_DACP.*CDAC_P).*DvP -(Vbpf_DACP1.*CDAC_P1).*DvP1-(Vbpf_DACP2.*CDAC_P2).*DvP2];
+    En=[-(Vbpf_DACN.*CDAC_N).*DvN -(Vbpf_DACN1.*CDAC_N1).*DvN1-(Vbpf_DACN2.*CDAC_N2).*DvN2];      
+      
     Vd=Vp-Vn;
     Ecode=Ecode+sum(Ep)+sum(En);
     
@@ -296,7 +287,7 @@ hold off
 figure(2)
 hold on
 plot(E_switch_thesis,'r')
-axis([0 1024 0 130])
+ axis([0 1024 0 130])
 hold off
 
     
